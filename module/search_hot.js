@@ -1,9 +1,10 @@
+const config = require('../config/index')
 // 热门搜索
 const mapping = {
   // 网易云
-  Netease: {
+  netease: {
     type: 'POST',
-    url: '/weapi/search/hot',
+    url: config.host['netease'] + '/weapi/search/hot',
     data: (query) => {
       return {
         type: 1111

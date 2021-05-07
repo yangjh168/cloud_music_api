@@ -1,9 +1,10 @@
+const config = require('../config/index')
 // 检查音乐是否可用
 const mapping = {
   // 网易云
-  Netease: {
+  netease: {
     type: 'POST',
-    url: '/weapi/song/enhance/player/url',
+    url: config.host['netease'] + '/weapi/song/enhance/player/url',
     data: (query) => {
       return {
         ids: '[' + parseInt(query.id) + ']',

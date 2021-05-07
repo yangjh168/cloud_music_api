@@ -1,9 +1,10 @@
+const config = require('../config/index')
 // 歌曲详情
 const mapping = {
   // 网易云
-  Netease: {
+  netease: {
     type: 'POST',
-    url: '/weapi/v3/song/detail',
+    url: config.host['netease'] + '/weapi/v3/song/detail',
     data: (query) => {
       query.ids = query.ids.split(/\s*,\s*/)
       return {

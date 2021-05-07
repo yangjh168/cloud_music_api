@@ -1,9 +1,10 @@
+const config = require('../config/index')
 // 搜索
 const mapping = {
   // 网易云
-  Netease: {
+  netease: {
     type: 'POST',
-    url: '/weapi/search/get',
+    url: config.host['netease'] + '/weapi/search/get',
     data: (query) => {
       return {
         s: query.keywords,
@@ -21,28 +22,32 @@ const mapping = {
       }
     },
     body: (result) => {
-      return result.songs.map(item => {
-        const album = item.album
-        const artists = item.artists.map(item => {
+      console.log(result)
+      return {
+        total: Number(result.songCount),
+        list: result.songs.map(item => {
+          const album = item.album
+          const artists = item.artists.map(item => {
+            return {
+              name: item['name'],
+              id: item['id'],
+              imageUrl: item['picUrl']
+            }
+          })
           return {
-            name: item['name'],
             id: item['id'],
-            imageUrl: item['picUrl']
+            title: item['name'],
+            mvId: item['mvid'] ? item['mvid'] : 0,
+            url: null, // `http://music.163.com/song/media/outer/url?id=${item['id']}.mp3`
+            album: {
+              id: album['id'],
+              name: album['name'],
+              coverImageUrl: album['picUrl']
+            },
+            artist: artists
           }
         })
-        return {
-          id: item['id'],
-          title: item['name'],
-          mvId: item['mvid'] ? item['mvid'] : 0,
-          url: null, // `http://music.163.com/song/media/outer/url?id=${item['id']}.mp3`
-          album: {
-            id: album['id'],
-            name: album['name'],
-            coverImageUrl: album['picUrl']
-          },
-          artist: artists
-        }
-      })
+      }
     }
   },
   // 酷狗

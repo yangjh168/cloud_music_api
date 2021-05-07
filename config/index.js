@@ -1,5 +1,5 @@
 const host = {
-  Netease: 'https://music.163.com',
+  netease: 'https://music.163.com',
   KuGou: '',
   Kuwo: ''
 }

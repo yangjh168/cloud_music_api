@@ -1,9 +1,10 @@
+const config = require('../config/index')
 // 歌词
 const mapping = {
   // 网易云
-  Netease: {
+  netease: {
     type: 'POST',
-    url: '/api/song/lyric',
+    url: config.host['netease'] + '/api/song/lyric',
     data: (query) => {
       return {
         id: query.id,

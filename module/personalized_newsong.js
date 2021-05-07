@@ -1,9 +1,10 @@
+const config = require('../config/index')
 // 推荐新歌
 const mapping = {
   // 网易云
-  Netease: {
+  netease: {
     type: 'POST',
-    url: '/api/personalized/newsong',
+    url: config.host['netease'] + '/api/personalized/newsong',
     data: (query) => {
       return {
         type: 'recommend',
