@@ -10,7 +10,7 @@ const mapping = {
         type: 1111
       }
     },
-    headers: (query) => {
+    options: (query) => {
       return {
         crypto: 'weapi',
         ua: 'mobile',
@@ -24,11 +24,11 @@ const mapping = {
     }
   },
   // 酷狗
-  KuGou: {
+  kugou: {
     'address': 'adres'
   },
   // 酷我
-  Kuwo: {
+  kuwo: {
     'address': 'adres'
   }
 }

@@ -11,7 +11,7 @@ const mapping = {
         br: parseInt(query.br || 999000)
       }
     },
-    headers: (query) => {
+    options: (query) => {
       return {
         crypto: 'weapi',
         cookie: query.cookie,
@@ -20,16 +20,22 @@ const mapping = {
       }
     },
     body: (result) => {
-      return true
+      return result && result.data && result.data[0]['fee'] === 8
     }
   },
   // 酷狗
-  KuGou: {
-    'address': 'adres'
+  kugou: {
+    url: '',
+    body: (result) => {
+      return true
+    }
   },
   // 酷我
-  Kuwo: {
-    'address': 'adres'
+  kuwo: {
+    url: '',
+    body: (result) => {
+      return true
+    }
   }
 }
 module.exports = { mapping }

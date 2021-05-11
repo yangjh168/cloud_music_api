@@ -11,7 +11,7 @@ module.exports = {
       n: 1000
     }
   },
-  headers: (query) => {
+  options: (query) => {
     return {
       crypto: 'weapi',
       cookie: query.cookie,

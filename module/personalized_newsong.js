@@ -12,7 +12,7 @@ const mapping = {
         areaId: query.areaId || 0
       }
     },
-    headers: (query) => {
+    options: (query) => {
       query.cookie.os = 'pc'
       return {
         crypto: 'weapi',
@@ -47,11 +47,11 @@ const mapping = {
     }
   },
   // 酷狗
-  KuGou: {
+  kugou: {
     'address': 'adres'
   },
   // 酷我
-  Kuwo: {
+  kuwo: {
     'address': 'adres'
   }
 }

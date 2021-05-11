@@ -14,7 +14,7 @@ const mapping = {
         total: true
       }
     },
-    headers: (query) => {
+    options: (query) => {
       return {
         crypto: 'weapi',
         cookie: query.cookie,
@@ -27,11 +27,11 @@ const mapping = {
     }
   },
   // 酷狗
-  KuGou: {
+  kugou: {
     'address': 'adres'
   },
   // 酷我
-  Kuwo: {
+  kuwo: {
     'address': 'adres'
   }
 }

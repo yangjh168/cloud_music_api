@@ -1,8 +1,8 @@
 const fs = require('fs')
 const path = require('path')
 const express = require('express')
-const request = require('./utils/request')
 const { cookieToJson } = require('./utils/index')
+const fetch = require('./axios/index')
 
 // const { get } = require('http')
 
@@ -77,7 +77,7 @@ function getAllFile(dirPath) {
 
 // 公共
 var fileList = getAllFile(path.join(__dirname, 'module'))// fs.readdirSync(path.join(__dirname, 'module')).reverse()
-console.log(fileList)
+// console.log(fileList)
 fileList.forEach((file) => {
   // 必须js后缀
   if (!file.endsWith('.js')) return
@@ -89,14 +89,44 @@ fileList.forEach((file) => {
   const module = require(path.join(__dirname, 'module', file))
   // 添加路由
   app.use(route, (req, res) => {
+    console.log('[req]', decodeURIComponent(req.originalUrl))
+    console.log('[query]', req.query);
+
     [req.query, req.body].forEach((item) => {
       if (typeof item.cookie === 'string') {
         item.cookie = cookieToJson(decodeURIComponent(item.cookie))
       }
     })
-
     // 没有传平台参数，默认网易云
-    req.platform = folder || req.query.platform || 'netease'
+    req.query.platform = req.query.platform ? req.query.platform.toString() : '1'
+    var platformKey
+    console.log('[folder]', folder)
+    if (folder) {
+      platformKey = folder
+      switch (platformKey) {
+        case 'kugou':
+          req.query.platform = '2'
+          break
+        case 'kuwo':
+          req.query.platform = '3'
+          break
+        default:
+          req.query.platform = '1'
+          break
+      }
+    } else {
+      switch (req.query.platform) {
+        case '2':
+          platformKey = 'kugou'
+          break
+        case '3':
+          platformKey = 'kuwo'
+          break
+        default:
+          platformKey = 'netease'
+          break
+      }
+    }
     // 请求参数
     const query = Object.assign(
       {},
@@ -106,58 +136,75 @@ fileList.forEach((file) => {
       req.files
     )
     // 请求配置
-    const mapping = folder ? module : module.mapping[req.platform]
+    const mapping = folder ? module : module.mapping[platformKey]
     const responseType = mapping.responseType ? mapping.responseType : 'json'
     console.log(mapping.url)
-    // 发生请求
-    request(
-      req.platform,
-      mapping.type,
-      mapping.url,
-      mapping.data(query),
-      mapping.headers(query)
-    ).then((result) => {
-      console.log('[OK]', decodeURIComponent(req.originalUrl))
-      res.append('Set-Cookie', result.cookie)
-      // 映射数据
-      if (responseType === 'xml' || responseType === 'document') {
-        // 返回xml
-        const body = mapping.body(result.body)
-        result.body = {
-          code: 200,
-          result: body
-        }
-      } else {
-        // 返回json
-        console.log(result.body.code)
-        if (result.body.code === 200) {
-          if (result.body.result) {
-            result.body.result = mapping.body(result.body.result)
+    // 存在url时发送请求，否则走自定义处理
+    if (mapping.url) {
+      // 发生请求
+      fetch.request(
+        mapping.type,
+        mapping.url,
+        mapping.data(query),
+        mapping.options(query)
+      ).then(async(result) => {
+        console.log('[OK]', decodeURIComponent(req.originalUrl))
+        res.append('Set-Cookie', result.cookie)
+        // 映射数据
+        if (responseType === 'xml' || responseType === 'document') {
+          // 返回xml
+          const body = await mapping.body(result.body)
+          result.body = {
+            code: 200,
+            result: body
+          }
+        } else {
+          // 返回json
+          console.log('[code]', result.body.code)
+          if (result.body.code === 200) {
+            if (result.body.result) {
+              result.body.result = await mapping.body(result.body.result, query)
+            } else {
+              // 返回映射数据给前台
+              result.body = {
+                code: result.body.code,
+                result: await mapping.body(JSON.parse(JSON.stringify(result.body)))
+              }
+            }
           } else {
-            // 返回映射数据给前台
+            // 返回xml
+            const body = await mapping.body(result.body)
             result.body = {
-              code: result.body.code,
-              result: mapping.body(JSON.parse(JSON.stringify(result.body)))
+              code: 200,
+              result: body
             }
           }
         }
+        res.status(result.status).send(result.body)
+        console.log('[响应结果]', JSON.stringify(result.body))
+      }, (error) => {
+        console.log('[ERR]', decodeURIComponent(req.originalUrl), {
+          status: error.status,
+          body: error.body
+        })
+        if (error.body.code === '301') error.body.msg = '需要登录'
+        res.append('Set-Cookie', error.cookie)
+        res.status(error.status).send(error.body)
+      }).catch((error) => {
+        console.log('[catch]', decodeURIComponent(req.originalUrl), {
+          status: 500,
+          body: '服务器异常：' + error
+        })
+        res.status(500).send('服务器异常')
+      })
+    } else {
+      var body = {
+        code: 200,
+        result: mapping.body(req)
       }
-      res.status(result.status).send(result.body)
-    }, (error) => {
-      console.log('[ERR]', decodeURIComponent(req.originalUrl), {
-        status: error.status,
-        body: error.body
-      })
-      if (error.body.code === '301') error.body.msg = '需要登录'
-      res.append('Set-Cookie', error.cookie)
-      res.status(error.status).send(error.body)
-    }).catch((error) => {
-      console.log('[catch]', decodeURIComponent(req.originalUrl), {
-        status: 500,
-        body: '服务器异常：' + error
-      })
-      res.status(500).send('服务器异常')
-    })
+      console.log('[自定义响应结果]', JSON.stringify(body))
+      res.status(200).send(body)
+    }
   })
 })
 

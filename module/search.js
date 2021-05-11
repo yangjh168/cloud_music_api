@@ -13,7 +13,7 @@ const mapping = {
         offset: query.offset || 0
       }
     },
-    headers: (query) => {
+    options: (query) => {
       return {
         crypto: 'weapi',
         cookie: query.cookie,
@@ -22,7 +22,7 @@ const mapping = {
       }
     },
     body: (result) => {
-      console.log(result)
+      // console.log(result)
       return {
         total: Number(result.songCount),
         list: result.songs.map(item => {
@@ -35,6 +35,7 @@ const mapping = {
             }
           })
           return {
+            platform: 1,
             id: item['id'],
             title: item['name'],
             mvId: item['mvid'] ? item['mvid'] : 0,
@@ -51,11 +52,11 @@ const mapping = {
     }
   },
   // 酷狗
-  KuGou: {
+  kugou: {
     'address': 'adres'
   },
   // 酷我
-  Kuwo: {
+  kuwo: {
     'address': 'adres'
   }
 }

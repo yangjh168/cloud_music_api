@@ -8,7 +8,7 @@ module.exports = {
   data: (query) => {
     return query
   },
-  headers: (query) => {
+  options: (query) => {
     return query
   },
   body: (result) => {
