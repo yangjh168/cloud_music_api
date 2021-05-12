@@ -7,7 +7,7 @@ const mapping = {
     type: 'POST',
     url: config.host['netease'] + '/weapi/v3/song/detail',
     data: (query) => {
-      query.ids = query.ids.split(/\s*,\s*/)
+      query.ids = query.id.split(/\s*,\s*/)
       return {
         c: '[' + query.ids.map((id) => '{"id":' + id + '}').join(',') + ']'
       }
@@ -71,7 +71,6 @@ const mapping = {
     },
     body: async(result, query) => {
       result = result[0]
-      // console.log(result)
       const albumid = result.albumid
       try {
         const res = await fetch.get('http://sartist.kuwo.cn/qi.s', {
@@ -81,6 +80,7 @@ const mapping = {
           isMultiArtists: 1,
           platform: 3
         })
+        console.log(res)
         const link = await fetch.get('http://antiserver.kuwo.cn/anti.s', {
           type: 'convert_url',
           rid: `MUSIC_${result.id}`,

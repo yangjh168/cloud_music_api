@@ -1,5 +1,5 @@
 const config = require('../config/index')
-const fetch = require('../axios/index')
+// const fetch = require('../axios/index')
 // 歌单详情
 const mapping = {
   // 网易云
@@ -23,6 +23,10 @@ const mapping = {
     },
     body: (result) => {
       // return JSON.parse(JSON.stringify(result))
+      result['playlist'].tracks = result['playlist'].tracks.map(item => {
+        item.platform = 1
+        return item
+      })
       return result['playlist']
       // const res = result.songs.map(item => {
       //   const album = item.al
@@ -55,73 +59,6 @@ const mapping = {
   },
   // 酷我
   kuwo: {
-    type: 'GET',
-    url: 'http://datacenter.kuwo.cn/d.c',
-    data: (query) => {
-      return {
-        ids: query.id,
-        corp: 'kuwo',
-        p2p: 1,
-        ft: 'music',
-        resenc: 'utf8',
-        isdownload: 1,
-        cmkey: 'plist_pl2012'
-      }
-    },
-    options: (query) => {
-      return query
-    },
-    body: async(result, query) => {
-      result = result[0]
-      // console.log(result)
-      const albumid = result.albumid
-      try {
-        const res = await fetch.get('http://sartist.kuwo.cn/qi.s', {
-          rid: albumid,
-          newver: 2,
-          encoding: 'utf8',
-          isMultiArtists: 1,
-          platform: 3
-        })
-        const link = await fetch.get('http://antiserver.kuwo.cn/anti.s', {
-          type: 'convert_url',
-          rid: `MUSIC_${result.id}`,
-          format: 'mp3',
-          response: 'url',
-          platform: 3
-        })
-        if (res.status === 200 && link.status === 200) {
-          const body = res.body
-          const artists = body.artists[0]
-          return {
-            platform: 3,
-            id: Number(result.id),
-            title: result.name,
-            mvId: 0,
-            url: link.body.replace(/other./g, 'win.'),
-            album: {
-              id: Number(body.albumID),
-              name: body.albumName,
-              coverImageUrl: body.albumPic
-            },
-            artist: [
-              {
-                id: Number(artists.artistID),
-                name: artists.artistName,
-                imageUrl: artists.artistPic
-              }
-            ]
-          }
-        } else {
-          return {
-            code: 500,
-            msg: '服务器错误'
-          }
-        }
-      } catch (error) {
-        console.log(error)
-      }
-    }
   }
 }
 module.exports = { mapping }
