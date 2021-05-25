@@ -34,7 +34,8 @@ module.exports = {
           url: null,
           album: {
             id: Number(item.ALBUMID),
-            name: item.ALBUM
+            name: item.ALBUM,
+            coverImageUrl: item.hts_MVPIC
           },
           artist: [
             {
