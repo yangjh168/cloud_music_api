@@ -90,42 +90,28 @@ fileList.forEach((file) => {
   // 添加路由
   app.use(route, (req, res) => {
     console.log('[req]', decodeURIComponent(req.originalUrl))
-    console.log('[query]', req.query);
-
+    console.log('[query]', req.query)
+    console.log('req.headers================')
+    console.log(req.headers);
     [req.query, req.body].forEach((item) => {
       if (typeof item.cookie === 'string') {
         item.cookie = cookieToJson(decodeURIComponent(item.cookie))
       }
     })
-    // 没有传平台参数，默认网易云
-    req.query.platform = req.query.platform ? req.query.platform.toString() : '1'
+    // 选取query的，再取headers中的,没有传平台参数，默认网易云
+    req.query.platform = req.query.platform ? req.query.platform.toString() : (req.headers.platform ? req.headers.platform : '1')
     var platformKey
-    console.log('[folder]', folder)
-    if (folder) {
-      platformKey = folder
-      switch (platformKey) {
-        case 'kugou':
-          req.query.platform = '2'
-          break
-        case 'kuwo':
-          req.query.platform = '3'
-          break
-        default:
-          req.query.platform = '1'
-          break
-      }
-    } else {
-      switch (req.query.platform) {
-        case '2':
-          platformKey = 'kugou'
-          break
-        case '3':
-          platformKey = 'kuwo'
-          break
-        default:
-          platformKey = 'netease'
-          break
-      }
+    // console.log('[folder]', folder)
+    switch (req.query.platform) {
+      case '2':
+        platformKey = 'kugou'
+        break
+      case '3':
+        platformKey = 'kuwo'
+        break
+      default:
+        platformKey = 'netease'
+        break
     }
     // 请求参数
     const query = Object.assign(
