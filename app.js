@@ -90,9 +90,9 @@ fileList.forEach((file) => {
   // 添加路由
   app.use(route, (req, res) => {
     console.log('[req]', decodeURIComponent(req.originalUrl))
-    console.log('[query]', req.query)
-    console.log('req.headers================')
-    console.log(req.headers);
+    console.log('[query]', req.query);
+    // console.log('req.headers================')
+    // console.log(req.headers);
     [req.query, req.body].forEach((item) => {
       if (typeof item.cookie === 'string') {
         item.cookie = cookieToJson(decodeURIComponent(item.cookie))
