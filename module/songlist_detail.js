@@ -59,6 +59,28 @@ const mapping = {
   },
   // 酷我
   kuwo: {
+    type: 'GET',
+    url: 'http://mobilebasedata.kuwo.cn/basedata.s',
+    data: (query) => {
+      return {
+        type: 'get_songlist_info2',
+        prod: 'kwplayer_ar_9.3.7.7',
+        corp: 'kuwo',
+        newver: 2,
+        p2p: 1,
+        notrace: 1,
+        id: query.id,
+        pos: 8,
+        apiv: 3,
+        aapiver: 1
+      }
+    },
+    options: (query) => {
+      return query
+    },
+    body: (result) => {
+      return result['sl_data']
+    }
   }
 }
 module.exports = { mapping }

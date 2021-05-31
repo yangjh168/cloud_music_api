@@ -33,6 +33,7 @@ const mapping = {
         })
         return {
           id: item.song['id'],
+          platform: 1,
           title: item.song['name'],
           mvId: item.song['mv'] ? item.song['mv'] : 0,
           url: `http://music.163.com/song/media/outer/url?id=${item.song['id']}.mp3`,
@@ -78,6 +79,7 @@ const mapping = {
         })
         return {
           id: item.song['id'],
+          platform: 2,
           title: item.song['name'],
           mvId: item.song['mv'] ? item.song['mv'] : 0,
           url: `http://music.163.com/song/media/outer/url?id=${item.song['id']}.mp3`,
@@ -123,6 +125,7 @@ const mapping = {
         })
         return {
           id: item.song['id'],
+          platform: 3,
           title: item.song['name'],
           mvId: item.song['mv'] ? item.song['mv'] : 0,
           url: `http://music.163.com/song/media/outer/url?id=${item.song['id']}.mp3`,

@@ -1,5 +1,6 @@
 // 歌单列表-可按分类查询
 const config = require('../config/index')
+const { xmlToJson } = require('../utils/index')
 const mapping = {
   // 网易云
   netease: {
@@ -39,6 +40,37 @@ const mapping = {
   // 酷狗
   kugou: {},
   // 酷我
-  kuwo: {}
+  kuwo: {
+    type: 'GET',
+    url: 'http://wapi.kuwo.cn/api/mobicase/playlist/taglist',
+    responseType: 'xml',
+    data: (query) => {
+      return {
+        type: query.id === '0' ? 'hot_taglist' : 'taglist',
+        digest: 10000,
+        id: query.id === '0' ? null : query.id,
+        start: query.limit || 0,
+        count: query.offset || 30,
+        platform: 'ar',
+        corp: 'kuwo',
+        newver: 2
+      }
+    },
+    options: (query) => {
+      return query
+    },
+    body: (result) => {
+      const temp = xmlToJson(result)
+      result = temp.root.section[0].songlist.map(item => item.$)
+      return result.map(item => {
+        return {
+          id: Number(item.id),
+          name: item.name,
+          picUrl: item.img,
+          playCount: Number(item.listencnt)
+        }
+      })
+    }
+  }
 }
 module.exports = { mapping }
