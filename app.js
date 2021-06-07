@@ -7,7 +7,7 @@ const fetch = require('./axios/index')
 // const { get } = require('http')
 
 const app = express()
-const port = process.env.PORT || 3030
+const port = process.env.PORT || 9000
 const host = process.env.HOST || ''
 
 // CORS & Preflight request
